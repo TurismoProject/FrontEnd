@@ -3,6 +3,8 @@ import * as React from "react";
 import { DrawerTrigger } from "../ui/drawer";
 import { Button } from "../ui/button";
 import { List, ShoppingCart, UserRound } from "lucide-react";
+import iconepreto from "@/../public/iconepreto.png";
+import iconebranco from "@/../public/iconebranco.png";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -22,6 +24,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import Image from "next/image";
 
 export const HeaderComponent = () => {
   const { scrollY } = useScroll();
@@ -80,9 +83,16 @@ export const HeaderComponent = () => {
             </div>
           </div>
           <div className="lg:navbar-start max-lg:navbar-center">
-            <a className={`text-xl ${color ? "text-black" : "text-white"}`}>
-              LOGO
-            </a>
+            <Link
+              href="/"
+              className={`text-xl ${color ? "text-black" : "text-white"}`}
+            >
+              <Image
+                src={color ? iconepreto : iconebranco}
+                className={color ? "h-16 w-16" : "h-20 w-20"}
+                alt="Logo"
+              />
+            </Link>
           </div>
           <div className="navbar-center hidden lg:flex">
             <NavigationMenu>
@@ -197,7 +207,7 @@ export const HeaderComponent = () => {
           <div className="navbar-end">
             <HoverCard openDelay={150}>
               <HoverCardTrigger asChild>
-                <button className="btn btn-ghost btn-circle  hover:bg-gray-200/70 active:bg-gray-200 group">
+                <button className="btn btn-ghost btn-circle hover:bg-gray-200/70 active:bg-gray-200 group">
                   <div
                     className={`indicator ${
                       color ? "text-black" : "text-white"
@@ -208,12 +218,22 @@ export const HeaderComponent = () => {
                 </button>
               </HoverCardTrigger>
               <HoverCardContent>
-                <ul>
+                <ul className="space-y-2">
                   <li>
-                    <a className="text-black"> Cadastre-se</a>
+                    <a
+                      href="/cadastro"
+                      className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+                    >
+                      Cadastre-se
+                    </a>
                   </li>
                   <li>
-                    <a className="text-black">Login</a>
+                    <a
+                      href="/login"
+                      className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+                    >
+                      Login
+                    </a>
                   </li>
                 </ul>
               </HoverCardContent>
