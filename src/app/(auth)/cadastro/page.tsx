@@ -1,9 +1,97 @@
-import React from "react";
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { data } from "tailwindcss/defaultTheme";
+import { ExecException } from "child_process";
 
 function RegisterPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiResponse, setApiResponse] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // const data = useMemo(
+  //   () => ({
+  //     name: "",
+  //     email: "",
+  //     password: "",
+  //     cpf: "",
+  //     birthday: "",
+  //     phoneNumber: "",
+  //     address: "",
+  //   }),
+  //   []
+  // );
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    cpf: "",
+    birthday: "",
+    phoneNumber: "",
+    address: "",
+  });
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("As senhas não coincidem!");
+      return;
+    }
+
+    setIsSubmitting(true);
+  };
+
+  const url: string = "http://localhost:3000/usuario/cadastro";
+  useEffect(() => {
+    const fetchRegister = async () => {
+      if (isSubmitting) {
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+              cpf: formData.cpf,
+              birthday: formData.birthday,
+              phoneNumber: formData.phoneNumber,
+              address: formData.address,
+              // data
+            }),
+          });
+          if (!response.ok) {
+            throw new Error("Erro ao enviar os dados");
+          }
+          const result = await response.json();
+          setApiResponse(result);
+        } catch (error: any) {
+          throw new Error("Erro ao enviar os dados:" + error.message);
+        } finally {
+          setIsSubmitting(false);
+        }
+      }
+      // console.log(fetchRegister());
+      // return () => {};
+      fetchRegister();
+    };
+  }, [isSubmitting, formData]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-8 bg-neutral-100">
       <div className="w-full max-w-md">
@@ -16,7 +104,12 @@ function RegisterPage() {
               Cadastre sua conta
             </h2>
 
-            <form className="space-y-6" action="#" method="POST">
+            <form
+              className="space-y-6"
+              action="#"
+              method="POST"
+              onSubmit={handleSubmit}
+            >
               <div className="space-y-4">
                 <div>
                   <label
@@ -33,6 +126,8 @@ function RegisterPage() {
                     required
                     className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                     placeholder=""
+                    value={formData.email}
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
