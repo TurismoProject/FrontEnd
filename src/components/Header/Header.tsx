@@ -178,7 +178,7 @@ export const HeaderComponent = () => {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
-                      href="/"
+                      href="../Produto"
                       className={cn(
                         navigationMenuTriggerStyle(),
                         `${color ? "text-black" : "text-white"}`
@@ -233,6 +233,14 @@ export const HeaderComponent = () => {
                       className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
                     >
                       Login
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/admin"
+                      className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+                    >
+                      Administração
                     </a>
                   </li>
                 </ul>

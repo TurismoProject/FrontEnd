@@ -11,7 +11,7 @@ const ForgotPasswordPage: React.FC = () => {
         <div>
           <div className="shadow-md rounded-lg p-8 space-y-8 bg-white">
             <div className="flex justify-center mb-4">
-              <Image src="/logopreta.png" alt="Logo" width={200} height={200} />
+              <Image src="/logoinicio.png" alt="Logo" width={200} height={200} />
             </div>
             <h2 className="text-center text-3xl font-extrabold text-gray-900 mb-2">
               Esqueceu sua senha?
