@@ -25,8 +25,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import Image from "next/image";
+import { useAuth } from "../../contexts/AuthContext";
+import { logoutUser } from "@/app/actions";
 
 export const HeaderComponent = () => {
+  // ################# DESIGN #################
   const { scrollY } = useScroll();
   const [color, setColor] = React.useState(false);
   const [searchVisible, setSearchVisible] = React.useState(false);
@@ -53,6 +56,9 @@ export const HeaderComponent = () => {
     }
     return "";
   };
+
+  // ################# NETWORKING #################
+  const { logOut, user } = useAuth();
 
   return (
     <>
@@ -218,24 +224,7 @@ export const HeaderComponent = () => {
                 </button>
               </HoverCardTrigger>
               <HoverCardContent>
-                <ul className="space-y-2">
-                  <li>
-                    <a
-                      href="/cadastro"
-                      className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
-                    >
-                      Cadastre-se
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/login"
-                      className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
-                    >
-                      Login
-                    </a>
-                  </li>
-                </ul>
+                {UserHoverContent(user ? true : false, user?.name)}
               </HoverCardContent>
             </HoverCard>
 
@@ -280,3 +269,52 @@ export const HeaderComponent = () => {
     </>
   );
 };
+
+function UserHoverContent(logged: boolean | undefined, userName?: string) {
+  if (!logged)
+    return (
+      <ul className="space-y-2">
+        <li>
+          <a
+            href="/cadastro"
+            className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+          >
+            Cadastre-se
+          </a>
+        </li>
+        <li>
+          <a
+            href="/login"
+            className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+          >
+            Entrar
+          </a>
+        </li>
+      </ul>
+    );
+  else
+    return (
+      <ul className="space-y-2">
+        <li>Olá, {userName}</li>
+        <li>
+          <Link
+            href="/perfil"
+            className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+          >
+            Perfil
+          </Link>
+        </li>
+        <li>
+          <button
+            onClick={async () => {
+              await logoutUser();
+              window.location.reload();
+            }}
+            className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+          >
+            Sair
+          </button>
+        </li>
+      </ul>
+    );
+}

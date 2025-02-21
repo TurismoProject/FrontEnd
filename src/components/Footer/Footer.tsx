@@ -1,23 +1,41 @@
+import Link from "next/link";
+
 const FooterComponent = () => {
   return (
     <footer className="footer bg-base-200 text-base-content p-10">
       <nav>
         <h6 className="footer-title">Serviços</h6>
-        <a className="link link-hover"></a>
-        <a className="link link-hover">Design</a>
-        <a className="link link-hover">Marketing</a>
-        <a className="link link-hover">Advertisement</a>
+        <Link href="#" className="link link-hover"></Link>
+        <Link href="#" className="link link-hover">
+          Design
+        </Link>
+        <Link href="#" className="link link-hover">
+          Marketing
+        </Link>
+        <Link href="#" className="link link-hover">
+          Advertisement
+        </Link>
       </nav>
       <nav>
         <h6 className="footer-title">Empresa</h6>
-        <a className="link link-hover">Sobre nós</a>
-        <a className="link link-hover">Contate-nos</a>
+        <Link href="#" className="link link-hover">
+          Sobre nós
+        </Link>
+        <Link href="#" className="link link-hover">
+          Contate-nos
+        </Link>
       </nav>
       <nav>
         <h6 className="footer-title">Política</h6>
-        <a className="link link-hover">Termos de uso</a>
-        <a className="link link-hover">Política de privacidade</a>
-        <a className="link link-hover">Política de cookies</a>
+        <Link href="#" className="link link-hover">
+          Termos de uso
+        </Link>
+        <Link href="#" className="link link-hover">
+          Política de privacidade
+        </Link>
+        <Link href="#" className="link link-hover">
+          Política de cookies
+        </Link>
       </nav>
       <nav>
         <h6 className="footer-title">Social</h6>
