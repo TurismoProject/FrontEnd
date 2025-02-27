@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { getUserBasicInfo, loginUser } from "@/app/actions";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { safeAsync } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import TextField from "@mui/material/TextField";
 
 export default function LoginForm() {
   const { setJWTAccessToken, setUserData } = useAuth();
@@ -44,37 +46,27 @@ export default function LoginForm() {
   return (
     <form className="space-y-6" action={handleAction}>
       <div className="space-y-4">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Endereço de e-mail
-          </label>
-          <input
+        <div className="relative w-sm">
+          <TextField
             id="email"
             name="email"
             type="email"
             autoComplete="email"
+            label="Endereço de e-mail"
             required
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-100 text-gray-900 bg-white focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm"
+            className="w-full"
             placeholder=""
           />
         </div>
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Senha
-          </label>
-          <input
+        <div className="relative w-sm">
+          <TextField
             id="password"
             name="password"
             type="password"
             autoComplete="current-password"
+            label="Senha"
             required
-            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-100 text-gray-900 bg-white focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+            className="w-full"
             placeholder=""
           />
         </div>
@@ -92,12 +84,13 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <button
+        <Button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          size="xl"
+          className="w-full flex justify-center py-2 px-4 border border-transparent text-xl font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
         >
           Login
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -18,6 +18,7 @@ interface AuthContextProps {
   setJWTAccessToken?: (token: string) => void;
   setUserData?: (user: User) => void;
   logOut?: () => void;
+  UserBasicInfo?: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextProps>({});
@@ -36,6 +37,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(() => user);
   }
 
+  async function UserBasicInfo() {
+    const res = await recreateAccessToken();
+    if (!res) return;
+
+    const userData = await getUserBasicInfo(res.accessToken);
+
+    setJWTAccessToken(res.accessToken);
+    setUserData({ name: userData.name, email: userData.email });
+  }
+
   async function logOut() {
     await logoutUser();
     setAccessToken(undefined);
@@ -43,18 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   React.useEffect(() => {
-    async function keepUserLogged() {
-      const res = await recreateAccessToken();
-      if (!res) return;
-
-      const userData = await getUserBasicInfo(res.accessToken);
-
-      setJWTAccessToken(res.accessToken);
-      setUserData({ name: userData.name, email: userData.email });
-    }
-
-    keepUserLogged();
-  }, []);
+    UserBasicInfo();
+  }, [accessToken]);
 
   return (
     <AuthContext.Provider
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setJWTAccessToken,
         setUserData,
         logOut,
+        UserBasicInfo,
       }}
     >
       {children}

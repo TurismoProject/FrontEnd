@@ -1,12 +1,10 @@
 import React from "react";
 import { SignBox } from "@/components/forms/sign-box";
 
-const LoginPage: React.FC = () => {
+export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-8 bg-neutral-100">
-      <SignBox type="login" />
+      <SignBox type="register" step="name" />
     </div>
   );
-};
-
-export default LoginPage;
+}

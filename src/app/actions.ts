@@ -14,6 +14,19 @@ const loginSchema = z.object({
   }),
 });
 
+const registerSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+  password: z.string().min(6).regex(strongPasswordRegex, {
+    message:
+      "Senha deve conter no mínimo 8 caracteres, uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
+  }),
+  cpf: z.string().min(11),
+  phoneNumber: z.string().min(11),
+  address: z.string().min(3),
+  birthday: z.string().min(10),
+});
+
 export async function loginUser(formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
@@ -97,4 +110,101 @@ export async function logoutUser() {
   // })
 
   return { success: true };
+}
+
+export async function checkEmailAvailability(email: string) {
+  const response = await fetch("http://localhost:3002/usuario/check-email", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.json();
+}
+
+export async function checkPhoneAvailability(phoneNumber: string) {
+  const response = await fetch("http://localhost:3002/usuario/check-phone", {
+    method: "POST",
+    body: JSON.stringify({
+      phone: phoneNumber,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.json();
+}
+
+export async function checkCpfAvailability(cpf: string) {
+  const response = await fetch("http://localhost:3002/usuario/check-cpf", {
+    method: "POST",
+    body: JSON.stringify({
+      cpf,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.json();
+}
+
+export async function registerUser(formData: FormData) {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+  const cpf = formData.get("cpf");
+  const phoneNumber = formData.get("phoneNumber");
+  const address = formData.get("address");
+  const birthday = formData.get("birthday");
+
+  console.log(cpf);
+
+  const result = registerSchema.safeParse({
+    name,
+    email,
+    password,
+    cpf,
+    phoneNumber,
+    address,
+    birthday,
+  });
+
+  if (!result.success)
+    return {
+      success: false,
+      message: result.error.message,
+    };
+
+  const response = await fetch("http://localhost:3002/usuario/cadastro", {
+    method: "POST",
+    body: JSON.stringify(result.data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return {
+      success: false,
+    };
+  }
+
+  const cookieStore = cookies();
+  cookieStore.set("refresh-token", data.refreshToken, {
+    httpOnly: true,
+  });
+
+  return {
+    success: true,
+    data,
+  };
 }
