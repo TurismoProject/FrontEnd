@@ -4,43 +4,66 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogoImg } from "@/components/cardImport";
 
-function ForgotPage() {
+function RotaPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-8 bg-neutral-100">
-      <div className="grid grid-cols-2 bg-white shadow-md rounded-lg overflow-hidden w-4/5 max-w-5xl">
-        {/* Coluna Esquerda com Logo */}
-        <div className="hidden md:flex flex-col justify-center p-8 bg-white">
+      <div className="grid grid-cols-2 bg-white shadow-md rounded-lg overflow-hidden max-w-4xl w-full">
+        <div className="hidden md:flex flex-col p-8 bg-white">
           <Link href="/">
             <Image src={LogoImg} alt="Logo" />
           </Link>
+          <h2 className="text-center text-3xl font-extrabold text-gray-900">
+            Cadastre a sua conta
+          </h2>
         </div>
 
-        {/* Coluna Direita com Formulário */}
         <div className="w-full p-8 space-y-8">
-          <div>
-            <h1 className="text-center text-3xl font-extrabold text-gray-900">
-              Recuperar Senha
-            </h1>
-            <p className="text-center text-lg font-normal text-gray-600">
-              Insira seu e-mail para enviar o link de recuperação
-            </p>
-          </div>
-
           <form className="space-y-6">
             <div className="space-y-4">
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="CPF"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  E-mail
+                  CPF
                 </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id="CPF"
+                  name="CPF"
+                  type="CPF"
                   required
-                  placeholder=""
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="andress"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Endereço
+                </label>
+                <input
+                  id="adress"
+                  name="adress"
+                  type="adress"
+                  required
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="birthday"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Data de Nascimento
+                </label>
+                <input
+                  id="birthday"
+                  name="birthday"
+                  type="birthday"
+                  required
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                 />
               </div>
@@ -51,13 +74,13 @@ function ForgotPage() {
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
-                Enviar Link de Recuperação
+                Registrar
               </button>
             </div>
           </form>
 
           <p className="text-center text-sm text-gray-700">
-            Lembrou da sua senha?{" "}
+            Você já tem uma conta?{" "}
             <Link
               href="/login"
               className="font-medium text-gray-400 hover:text-gray-500"
@@ -65,14 +88,12 @@ function ForgotPage() {
               Faça login
             </Link>
           </p>
-
           <p className="text-center text-sm text-gray-700 rounded-sm">
-            Ou entre com sua conta Google
+            Faça o seu Login com a google
           </p>
-
           <div className="flex justify-between mt-4">
             <p className="text-sm text-gray-600">
-              &copy; 2025 Todos os direitos reservados.
+              &copy; 2024 Todos os direitos reservados.
             </p>
             <div className="flex gap-1">
               <Button
@@ -95,4 +116,4 @@ function ForgotPage() {
   );
 }
 
-export default ForgotPage;
+export default RotaPage;

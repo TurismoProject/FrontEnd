@@ -290,6 +290,14 @@ function UserHoverContent(logged: boolean | undefined, userName?: string) {
             Entrar
           </a>
         </li>
+        <li>
+          <a
+            href="/usuario"
+            className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
+          >
+            Usuario
+          </a>
+        </li>
       </ul>
     );
   else

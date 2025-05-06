@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Radio, RadioGroup } from "@headlessui/react";
 import Image from "next/image";
 import { FooterComponent } from "@/components/Footer";
 import { HeaderProduto } from "@/components/HeaderProduto";
 import { Drawer } from "@/components/ui/drawer";
+import axios from "axios";
 
 const product = {
   name: "Passeio das Falésias do Gunga",
@@ -45,7 +46,7 @@ const product = {
     { name: "8", inStock: true },
   ],
   description:
-    'O passeio das Falésias do Gunga é uma experiência única que combina a beleza natural com uma imersão cultural. Localizado no litoral de Alagoas, o passeio oferece vistas deslumbrantes das falésias coloridas que se erguem sobre as águas cristalinas do mar. Durante o trajeto, você será envolvido por uma paisagem espetacular, com tons vibrantes de laranja, vermelho e branco, criando um cenário perfeito para fotos inesquecíveis. Além de aproveitar as belezas naturais, você também terá a oportunidade de explorar as praias paradisíacas ao redor, com águas calmas ideais para um mergulho relaxante.',
+    "O passeio das Falésias do Gunga é uma experiência única que combina a beleza natural com uma imersão cultural. Localizado no litoral de Alagoas, o passeio oferece vistas deslumbrantes das falésias coloridas que se erguem sobre as águas cristalinas do mar. Durante o trajeto, você será envolvido por uma paisagem espetacular, com tons vibrantes de laranja, vermelho e branco, criando um cenário perfeito para fotos inesquecíveis. Além de aproveitar as belezas naturais, você também terá a oportunidade de explorar as praias paradisíacas ao redor, com águas calmas ideais para um mergulho relaxante.",
   destaques: [
     "Passeio guiado por profissionais locais experientes",
     "Oportunidade de explorar a fauna e flora local",
@@ -53,7 +54,7 @@ const product = {
     "Acesso a praias tranquilas e de águas cristalinas",
   ],
   details:
-    'O passeio é realizado em veículos confortáveis, com transporte seguro até os pontos mais icônicos. Prepare-se para um dia repleto de descobertas, natureza e momentos memoráveis. Ideal para quem deseja uma conexão profunda com a natureza e a cultura local.',
+    "O passeio é realizado em veículos confortáveis, com transporte seguro até os pontos mais icônicos. Prepare-se para um dia repleto de descobertas, natureza e momentos memoráveis. Ideal para quem deseja uma conexão profunda com a natureza e a cultura local.",
 };
 const reviews = { href: "#", average: 4, totalCount: 117 };
 
@@ -63,6 +64,22 @@ function classNames(...classes: string[]) {
 
 export default function Produtos() {
   const [selectedSize, setSelectedSize] = useState(product.pessoas[2]);
+  const [products, setProducts] = useState([]);
+
+  const getProducts = axios.get("http://localhost:3002/produto/busca");
+
+  const getAllProducts = async () => {
+    try {
+      const response = await getProducts;
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllProducts();
+  });
 
   return (
     <div className="bg-white">
@@ -190,7 +207,6 @@ export default function Produtos() {
             </div>
 
             <form className="mt-10">
-            
               <div className="mt-10">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium text-gray-900">Pessoas</h3>
@@ -263,7 +279,6 @@ export default function Produtos() {
           </div>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
-            {/* Description and details */}
             <div>
               <h3 className="sr-only">Description</h3>
 
@@ -297,8 +312,8 @@ export default function Produtos() {
         </div>
       </div>
       <div className="w-full bg-white text-white py-10">
-  <FooterComponent />
-</div>
+        <FooterComponent />
+      </div>
     </div>
   );
 }
