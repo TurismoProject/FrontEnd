@@ -1,16 +1,16 @@
 import { Search } from "lucide-react";
-import { BannerComponent, BannerProgress } from "./Banner";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { BannerComponent, BannerProgress } from "@/components/Banner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "./ui/carousel";
-import { cardArr } from "./cardImport";
-import { ShoppingCard } from "./ShoppingCard";
+} from "@/components/ui/carousel";
+import { cardArr } from "@/components/cardImport";
+import { ShoppingCard } from "@/components/ShoppingCard";
 
 export default function MainPage() {
   return (

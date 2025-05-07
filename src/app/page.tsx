@@ -1,4 +1,4 @@
-import MainPage from "@/components/MainPage";
+import MainPage from "@/components/pages/mainPage";
 import {
   Drawer,
   DrawerContent,
