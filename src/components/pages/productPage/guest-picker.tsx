@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ChevronUpIcon, Minus, Plus } from "lucide-react";
 import {
@@ -7,13 +7,37 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { IProduct } from "@/lib/interfaces";
+import { useBooking } from "../../../contexts/BookingContext";
 
 export default function GuestPicker({ data }: { data: IProduct }) {
-  const [adultsSize, setAdultsSize] = useState<number>(1); // Estado para o tamanh
-  const [childrenSize, setChildrenSize] = useState<number>(0); // Estado para o tamanh
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const {
+    adultsCount,
+    setAdultsCount,
+    childrenCount,
+    setChildrenCount,
+    totalGuests,
+    selectedDateTime,
+    getAvailableSpots,
+  } = useBooking();
 
-  const totalSize = adultsSize + childrenSize;
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [availableSpots, setAvailableSpots] = useState<number | null>(null);
+
+  // Update available spots when date/time changes
+  useEffect(() => {
+    if (selectedDateTime && data.availability) {
+      const spots = getAvailableSpots(data.availability);
+      setAvailableSpots(spots);
+    } else {
+      setAvailableSpots(null);
+    }
+  }, [selectedDateTime, data.availability, getAvailableSpots]);
+
+  // Calculate max allowed guests based on available spots or product max group size
+  const maxAllowedGuests =
+    availableSpots !== null
+      ? Math.min(availableSpots, data.maxGroupSize)
+      : data.maxGroupSize;
 
   return (
     <Popover
@@ -26,14 +50,21 @@ export default function GuestPicker({ data }: { data: IProduct }) {
         <Button
           variant="outline"
           className="mt-4 w-full flex justify-between p-6 border-gray-600 rounded-lg"
+          disabled={!selectedDateTime}
         >
           <div className="flex-col items-start justify-start w-1/5">
             <label className="leading-3 text-xs">PESSOAS</label>
             <div className="text-sm">
-              {totalSize} {totalSize === 1 ? "pessoa" : "pessoas"}
+              {totalGuests} {totalGuests === 1 ? "pessoa" : "pessoas"}
             </div>
           </div>
           <div>
+            {availableSpots !== null && (
+              <span className="text-xs mr-2 text-gray-500">
+                {availableSpots}{" "}
+                {availableSpots === 1 ? "vaga disponível" : "vagas disponíveis"}
+              </span>
+            )}
             {isOpen ? (
               <ChevronUpIcon
                 className="h-5 w-5 text-slate-800"
@@ -58,16 +89,16 @@ export default function GuestPicker({ data }: { data: IProduct }) {
             </div>
             <div className="grid grid-cols-3 w-full">
               <Button
-                disabled={adultsSize === 1}
-                tabIndex={adultsSize === 1 ? -1 : undefined}
+                disabled={adultsCount === 1}
+                tabIndex={adultsCount === 1 ? -1 : undefined}
                 variant="outline"
                 size="icon"
                 className={`border-gray-400 hover:border-gray-800 rounded-full m-auto ${
-                  adultsSize === 1 ? "invisible" : ""
+                  adultsCount === 1 ? "invisible" : ""
                 }`}
                 onClick={() => {
-                  if (adultsSize > 1) {
-                    setAdultsSize(adultsSize - 1);
+                  if (adultsCount > 1) {
+                    setAdultsCount(adultsCount - 1);
                   }
                 }}
               >
@@ -75,19 +106,19 @@ export default function GuestPicker({ data }: { data: IProduct }) {
               </Button>
 
               <div className="text-sm flex text-black items-center justify-center">
-                {adultsSize}
+                {adultsCount}
               </div>
               <Button
-                disabled={totalSize === data.maxGroupSize}
-                tabIndex={totalSize === data.maxGroupSize ? -1 : undefined}
+                disabled={totalGuests === maxAllowedGuests}
+                tabIndex={totalGuests === maxAllowedGuests ? -1 : undefined}
                 variant="outline"
                 size="icon"
                 className={`border-gray-400 hover:border-gray-800 rounded-full m-auto ${
-                  totalSize === data.maxGroupSize ? "invisible" : ""
+                  totalGuests === maxAllowedGuests ? "invisible" : ""
                 }`}
                 onClick={() => {
-                  if (totalSize < data.maxGroupSize) {
-                    setAdultsSize(adultsSize + 1);
+                  if (totalGuests < maxAllowedGuests) {
+                    setAdultsCount(adultsCount + 1);
                   }
                 }}
               >
@@ -102,16 +133,16 @@ export default function GuestPicker({ data }: { data: IProduct }) {
             </div>
             <div className="grid grid-cols-3 w-full">
               <Button
-                disabled={childrenSize === 0}
-                tabIndex={childrenSize === 0 ? -1 : undefined}
+                disabled={childrenCount === 0}
+                tabIndex={childrenCount === 0 ? -1 : undefined}
                 variant="outline"
                 size="icon"
                 className={`border-gray-400 hover:border-gray-800 rounded-full m-auto ${
-                  childrenSize === 0 ? "invisible" : ""
+                  childrenCount === 0 ? "invisible" : ""
                 }`}
                 onClick={() => {
-                  if (childrenSize > 0) {
-                    setChildrenSize(childrenSize - 1);
+                  if (childrenCount > 0) {
+                    setChildrenCount(childrenCount - 1);
                   }
                 }}
               >
@@ -119,19 +150,19 @@ export default function GuestPicker({ data }: { data: IProduct }) {
               </Button>
 
               <div className="text-sm flex text-black items-center justify-center">
-                {childrenSize}
+                {childrenCount}
               </div>
               <Button
-                disabled={totalSize === data.maxGroupSize}
-                tabIndex={totalSize === data.maxGroupSize ? -1 : undefined}
+                disabled={totalGuests === maxAllowedGuests}
+                tabIndex={totalGuests === maxAllowedGuests ? -1 : undefined}
                 variant="outline"
                 size="icon"
                 className={`border-gray-400 hover:border-gray-800 rounded-full m-auto ${
-                  totalSize === data.maxGroupSize ? "invisible" : ""
+                  totalGuests === maxAllowedGuests ? "invisible" : ""
                 }`}
                 onClick={() => {
-                  if (totalSize < data.maxGroupSize) {
-                    setChildrenSize(childrenSize + 1);
+                  if (totalGuests < maxAllowedGuests) {
+                    setChildrenCount(childrenCount + 1);
                   }
                 }}
               >
@@ -139,6 +170,15 @@ export default function GuestPicker({ data }: { data: IProduct }) {
               </Button>
             </div>
           </div>
+
+          {availableSpots !== null && (
+            <div className="mt-4 text-sm text-center text-gray-500">
+              {availableSpots}{" "}
+              {availableSpots === 1 ? "vaga disponível" : "vagas disponíveis"}{" "}
+              para esta data e horário
+            </div>
+          )}
+
           <Button
             className="w-full mt-6 hover:bg-slate-700 active:scale-90 transition-all duration-100"
             onClick={() => {

@@ -9,13 +9,26 @@ import { Paper } from "@mui/material";
 import GuestPicker from "./guest-picker";
 import DatePicker from "./date-picker";
 import { Button } from "@/components/ui/button";
+import { useBooking } from "../../../contexts/BookingContext";
+import { useCart } from "@/contexts/CartContext";
 
 export default function ProductPage({ data }: { data: IProduct }) {
   const [rating, setRating] = useState<number>(Number.parseFloat(data.rating));
 
+  const { addItem } = useCart();
+  const { adultsCount, childrenCount, selectedDateTime } = useBooking();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // TODO: Handle submit
+
+    addItem({
+      product: data,
+      quantity: 1,
+      adults: adultsCount,
+      children: childrenCount,
+      selectedDate: selectedDateTime as Date,
+    });
   };
 
   return (
@@ -110,7 +123,6 @@ export default function ProductPage({ data }: { data: IProduct }) {
               <div className="mt-10">
                 <fieldset aria-label="Escolha uma quantia" className="mt-4">
                   <DatePicker data={data} />
-
                   <GuestPicker data={data} />
                 </fieldset>
               </div>
@@ -118,9 +130,10 @@ export default function ProductPage({ data }: { data: IProduct }) {
               <Button
                 type="submit"
                 size="xl"
+                disabled={!selectedDateTime || adultsCount === 0}
                 className="w-full mt-6 hover:bg-slate-700 active:scale-90 transition-all duration-100 text-lg"
               >
-                Reservar
+                Adicionar ao Carrinho
               </Button>
             </form>
           </Paper>

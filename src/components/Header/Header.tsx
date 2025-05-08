@@ -27,6 +27,7 @@ import {
 import Image from "next/image";
 import { useAuth } from "../../contexts/AuthContext";
 import { logoutUser } from "@/app/actions";
+import { CartButton } from "../CartButton";
 
 export const HeaderComponent = () => {
   // ################# DESIGN #################
@@ -228,7 +229,7 @@ export const HeaderComponent = () => {
               </HoverCardContent>
             </HoverCard>
 
-            <button className="btn btn-ghost btn-circle hover:bg-gray-200/70 active:bg-gray-200 group">
+            {/* <button className="btn btn-ghost btn-circle hover:bg-gray-200/70 active:bg-gray-200 group">
               <div
                 className={`indicator ${
                   color ? "text-black" : "text-white"
@@ -236,7 +237,8 @@ export const HeaderComponent = () => {
               >
                 <ShoppingCart />
               </div>
-            </button>
+            </button> */}
+            <CartButton color={color} />
           </div>
         </div>
       </motion.header>

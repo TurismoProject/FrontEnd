@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, ClockIcon } from "lucide-react";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
@@ -19,15 +19,21 @@ import { ptBR as pt } from "date-fns/locale";
 import { IProduct } from "@/lib/interfaces";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { TimeView } from "@mui/x-date-pickers/models";
+import { useBooking } from "../../../contexts/BookingContext";
 
 export default function DatePicker({ data }: { data: IProduct }) {
   const { duration, workingHours, availability } = data;
-  console.log(data);
+  const { selectedDateTime, setSelectedDateTime } = useBooking();
 
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [calendarWasSelected, setCalendarWasSelected] =
-    useState<boolean>(false);
-  const [timeWasSelected, setTimeWasSelected] = useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>(
+    selectedDateTime || new Date()
+  );
+  const [calendarWasSelected, setCalendarWasSelected] = useState<boolean>(
+    !!selectedDateTime
+  );
+  const [timeWasSelected, setTimeWasSelected] = useState<boolean>(
+    !!selectedDateTime
+  );
 
   // Helper to update only the date part
   function handleDateChange(newDate: Date | undefined) {
@@ -72,6 +78,13 @@ export default function DatePicker({ data }: { data: IProduct }) {
     );
     setDate(updated);
   }
+
+  // Update context when date changes
+  useEffect(() => {
+    if (date && calendarWasSelected && timeWasSelected) {
+      setSelectedDateTime(date);
+    }
+  }, [date, calendarWasSelected, timeWasSelected, setSelectedDateTime]);
 
   // --- New logic for min/max time and step ---
   let minTime: Date | undefined = undefined;
