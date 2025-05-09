@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { FooterComponent } from "@/components/Footer";
-import { HeaderProduto } from "@/components/HeaderProduto";
+import { HeaderProduto } from "@/components/Header";
 import { Drawer } from "@/components/ui/drawer";
 import { IProduct } from "@/lib/interfaces";
 import { Rating } from "@/components/ui/rating";

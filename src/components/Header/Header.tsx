@@ -277,28 +277,28 @@ function UserHoverContent(logged: boolean | undefined, userName?: string) {
     return (
       <ul className="space-y-2">
         <li>
-          <a
+          <Link
             href="/cadastro/steps/nome"
             className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
           >
             Cadastre-se
-          </a>
+          </Link>
         </li>
         <li>
-          <a
+          <Link
             href="/login"
             className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
           >
             Entrar
-          </a>
+          </Link>
         </li>
         <li>
-          <a
+          <Link
             href="/usuario"
             className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
           >
             Usuario
-          </a>
+          </Link>
         </li>
       </ul>
     );

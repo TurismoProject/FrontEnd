@@ -337,7 +337,7 @@ export default function DatePicker({ data }: { data: IProduct }) {
               
             /> */}
 
-            {/* <DigitalClock
+            <DigitalClock
               value={date}
               onChange={handleTimeChange}
               minTime={minTime}
@@ -345,9 +345,9 @@ export default function DatePicker({ data }: { data: IProduct }) {
               disabled={!calendarWasSelected}
               ampm={false}
               timeStep={minutesStep}
-            /> */}
+            />
 
-            <TimeClock
+            {/* <TimeClock
               value={date}
               onChange={handleTimeChange}
               minTime={minTime}
@@ -356,7 +356,7 @@ export default function DatePicker({ data }: { data: IProduct }) {
               views={["hours"]}
               ampm={false}
               shouldDisableTime={shouldDisableTime}
-            />
+            /> */}
           </div>
         </PopoverContent>
       </LocalizationProvider>

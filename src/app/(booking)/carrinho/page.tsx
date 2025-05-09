@@ -3,13 +3,12 @@
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FooterComponent } from "@/components/Footer";
 import { Drawer } from "@/components/ui/drawer";
-import { HeaderProduto } from "@/components/HeaderProduto";
+import { HeaderProduto } from "@/components/Header";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrice, totalItems } =

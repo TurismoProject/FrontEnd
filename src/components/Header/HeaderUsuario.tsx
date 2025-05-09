@@ -7,7 +7,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { ListItem } from "../Header/ListItem";
+import { ListItem } from "./ListItem";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";

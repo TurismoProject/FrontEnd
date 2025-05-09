@@ -1,5 +1,5 @@
 "use client";
-import { HeaderUsuario } from "@/components/HeaderUsuario";
+import { HeaderUsuario } from "@/components/Header";
 import { PhoneIcon } from "@heroicons/react/24/solid";
 import { Drawer } from "@/components/ui/drawer";
 

@@ -38,19 +38,23 @@ export async function loginUser(formData: FormData) {
 
 export async function recreateAccessToken() {
   const cookieStore = cookies();
-  const refreshToken = cookieStore.get("refresh-token")?.value;
+  const refreshToken: string | undefined =
+    cookieStore.get("refresh-token")?.value;
 
   if (!refreshToken) {
+    console.log("No refresh token found");
     return;
   }
 
   const response = await fetch("http://localhost:3002/usuario/relogar", {
     method: "POST",
-    body: JSON.stringify({ refreshToken }),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${refreshToken}`,
     },
-    cache: "no-store",
+    next: {
+      revalidate: 15 * 60,
+    },
   });
 
   const data = await response.json();
@@ -68,23 +72,27 @@ export async function getUserBasicInfo(accessToken: string) {
   });
 
   const data = await response.json();
+  console.log(data); // TODO: Remover depois do teste
+
   return data.user;
 }
 
 export async function logoutUser() {
   const cookieStore = cookies();
-  cookieStore.delete("refresh-token");
+  const refreshToken: string | undefined =
+    cookieStore.get("refresh-token")?.value;
 
   // TODO: Revogar o refresh token
-  // const response = await fetch("http://localhost:3002/usuario/logout", {
-  //   method: "POST",
-  //   body: JSON.stringify({}),
-  //   headers: {
-  //     "Content-Type": "application/json"
-  //   },
-  //   cache: "no-store",
-  // })
+  const response = await fetch("http://localhost:3002/usuario/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${refreshToken}`,
+    },
+    cache: "no-store",
+  });
 
+  cookieStore.delete("refresh-token");
   return { success: true };
 }
 
