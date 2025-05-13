@@ -42,6 +42,46 @@ export interface WorkingHours {
   isAvailable: boolean;
 }
 
+export interface SupplierDashboard {
+  totalProducts: number;
+  totalOrders: number;
+  totalSales: number;
+  totalCompletedOrders: number;
+  totalPendingOrders: number;
+  totalCancelledOrders: number;
+  recentOrders: Order[];
+  salesComparison: SalesComparison;
+}
+
+export interface Order {
+  id: string;
+  productName: string;
+  customerName: string;
+  date: Date;
+  status: BookingStatus;
+  totalPrice: number;
+}
+
+export interface SalesComparison {
+  currentMonthSales: number;
+  previousMonthSales: number;
+  percentageChange: number; // Positive or negative value representing the percentage change
+  monthlySales: MonthlyDataPoint[];
+}
+
+export interface MonthlyDataPoint {
+  month: string;
+  sales: number;
+  orders: number;
+}
+
+export enum BookingStatus {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  CONFIRMED = "CONFIRMED",
+}
+
 enum DayOfWeek {
   SUNDAY = "SUNDAY",
   MONDAY = "MONDAY",

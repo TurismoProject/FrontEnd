@@ -1,5 +1,6 @@
 "use server";
 
+import { SupplierDashboard } from "@/lib/interfaces";
 import { loginSchema, registerSchema } from "@/schemas/auth-schema";
 import { cookies } from "next/headers";
 
@@ -13,7 +14,7 @@ export async function loginUser(formData: FormData) {
     throw new Error(result.error.message);
   }
 
-  const response = await fetch("http://localhost:3002/usuario/login", {
+  const response = await fetch(`${process.env.API_URL}/usuario/login`, {
     method: "POST",
     body: JSON.stringify(result.data),
     headers: {
@@ -23,6 +24,43 @@ export async function loginUser(formData: FormData) {
   });
 
   const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  const cookieStore = cookies();
+  cookieStore.set("refresh-token", data.refreshToken, {
+    httpOnly: true,
+  });
+
+  return { accessToken: data.accessToken };
+}
+
+export async function loginSupplier(formData: FormData) {
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  const result = loginSchema.safeParse({ email, password });
+
+  if (!result.success) {
+    throw new Error(result.error.message);
+  }
+
+  const response = await fetch(`${process.env.API_URL}/provedor/login`, {
+    method: "POST",
+    body: JSON.stringify(result.data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+
+  const data: {
+    accessToken: string;
+    refreshToken: string;
+    message: string;
+  } = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message);
@@ -46,7 +84,7 @@ export async function recreateAccessToken() {
     return;
   }
 
-  const response = await fetch("http://localhost:3002/usuario/relogar", {
+  const response = await fetch(`${process.env.API_URL}/usuario/relogar`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -63,7 +101,7 @@ export async function recreateAccessToken() {
 }
 
 export async function getUserBasicInfo(accessToken: string) {
-  const response = await fetch("http://localhost:3002/usuario/informacoes", {
+  const response = await fetch(`${process.env.API_URL}/usuario/informacoes`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +121,7 @@ export async function logoutUser() {
     cookieStore.get("refresh-token")?.value;
 
   // TODO: Revogar o refresh token
-  const response = await fetch("http://localhost:3002/usuario/logout", {
+  const response = await fetch(`${process.env.API_URL}/usuario/logout`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +135,7 @@ export async function logoutUser() {
 }
 
 export async function checkEmailAvailability(email: string) {
-  const response = await fetch("http://localhost:3002/usuario/check-email", {
+  const response = await fetch(`${process.env.API_URL}/usuario/check-email`, {
     method: "POST",
     body: JSON.stringify({
       email,
@@ -111,7 +149,7 @@ export async function checkEmailAvailability(email: string) {
 }
 
 export async function checkPhoneAvailability(phoneNumber: string) {
-  const response = await fetch("http://localhost:3002/usuario/check-phone", {
+  const response = await fetch(`${process.env.API_URL}/usuario/check-phone`, {
     method: "POST",
     body: JSON.stringify({
       phone: phoneNumber,
@@ -125,7 +163,7 @@ export async function checkPhoneAvailability(phoneNumber: string) {
 }
 
 export async function checkCpfAvailability(cpf: string) {
-  const response = await fetch("http://localhost:3002/usuario/check-cpf", {
+  const response = await fetch(`${process.env.API_URL}/usuario/check-cpf`, {
     method: "POST",
     body: JSON.stringify({
       cpf,
@@ -165,7 +203,7 @@ export async function registerUser(formData: FormData) {
       message: result.error.message,
     };
 
-  const response = await fetch("http://localhost:3002/usuario/cadastro", {
+  const response = await fetch(`${process.env.API_URL}/usuario/cadastro`, {
     method: "POST",
     body: JSON.stringify(result.data),
     headers: {
@@ -191,4 +229,19 @@ export async function registerUser(formData: FormData) {
     success: true,
     data,
   };
+}
+
+export async function getSupplierDashboardData(accessToken: string) {
+  const response = await fetch(`${process.env.API_URL}/provedor/dashboard`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const data: SupplierDashboard = await response.json();
+
+  console.log(data); // TODO: Remover depois do testek
+
+  return data;
 }

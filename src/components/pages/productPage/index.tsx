@@ -23,7 +23,13 @@ export default function ProductPage({ data }: { data: IProduct }) {
     // TODO: Handle submit
 
     addItem({
-      product: data,
+      product: {
+        id: data.id,
+        name: data.name,
+        price: Number.parseFloat(data.price),
+        images: data.images,
+        duration: data.duration,
+      },
       quantity: 1,
       adults: adultsCount,
       children: childrenCount,

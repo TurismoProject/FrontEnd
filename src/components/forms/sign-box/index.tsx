@@ -6,7 +6,7 @@ import LoginForm from "./login-form";
 import RegisterSteps from "./register-steps";
 
 interface SignFormProps {
-  type: "register" | "login";
+  type: "register" | "loginUser" | "loginSupplier";
   step?: "name" | "email" | "birthday" | "basicInfo" | "password";
 }
 
@@ -24,7 +24,11 @@ export function SignBox({ type, step }: SignFormProps) {
       <div className="w-full p-8 space-y-8">
         <Title type={type} step={step} />
 
-        {type === "login" ? <LoginForm /> : <RegisterSteps step={step} />}
+        {type === "loginUser" || type === "loginSupplier" ? (
+          <LoginForm type={type} />
+        ) : (
+          <RegisterSteps step={step} />
+        )}
 
         <ExtraButtons type={type} />
 
@@ -52,7 +56,11 @@ export function SignBox({ type, step }: SignFormProps) {
   );
 }
 
-function ExtraButtons({ type }: { type: "register" | "login" }) {
+function ExtraButtons({
+  type,
+}: {
+  type: "register" | "loginUser" | "loginSupplier";
+}) {
   if (type === "register")
     return (
       <>
@@ -93,7 +101,7 @@ function Title({ type, step }: SignFormProps) {
   return (
     <div>
       <h1 className="text-center text-3xl font-extrabold text-gray-900">
-        {type === "login"
+        {type === "loginUser" || type === "loginSupplier"
           ? "Entre na sua conta"
           : step === "name" || step === "basicInfo" || step === "birthday"
           ? "Informações Básicas"
@@ -102,7 +110,7 @@ function Title({ type, step }: SignFormProps) {
           : "Crie sua conta"}
       </h1>
       <p className="text-center text-lg font-normal text-gray-600">
-        {type === "login"
+        {type === "loginUser" || type === "loginSupplier"
           ? ""
           : step === "name"
           ? "Nos diga seu nome"

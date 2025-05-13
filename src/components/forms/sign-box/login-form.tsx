@@ -1,19 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { getUserBasicInfo, loginUser } from "@/app/actions";
+import { getUserBasicInfo, loginSupplier, loginUser } from "@/app/actions";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { safeAsync } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import TextField from "@mui/material/TextField";
 
-export default function LoginForm() {
+export default function LoginForm({
+  type,
+}: {
+  type: "loginUser" | "loginSupplier";
+}) {
   const { setJWTAccessToken, setUserData } = useAuth();
   const router = useRouter();
 
   async function handleAction(formData: FormData) {
-    const [loginError, response] = await safeAsync(loginUser(formData));
+    const [loginError, response] =
+      type === "loginUser"
+        ? await safeAsync(loginUser(formData))
+        : await safeAsync(loginSupplier(formData));
 
     if (loginError) {
       console.log(loginError);

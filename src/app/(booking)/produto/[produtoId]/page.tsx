@@ -9,7 +9,7 @@ export default async function Product({
 }) {
   const { produtoId } = await params;
 
-  const response = await fetch(`http://localhost:3002/produto`, {
+  const response = await fetch(`${process.env.API_URL}/produto`, {
     method: "GET",
     headers: {
       uuid: produtoId,
