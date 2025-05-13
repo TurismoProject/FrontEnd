@@ -2,7 +2,7 @@
 
 import { checkCpfAvailability, checkPhoneAvailability } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { useRegister } from "@/contexts/RegisterContext";
+import { useSupplierRegister } from "@/contexts/SupplierRegisterContext";
 import { safeAsync } from "@/lib/utils";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
@@ -11,27 +11,27 @@ import { useState } from "react";
 export function BasicInfoStep() {
   const router = useRouter();
   const {
-    cpf,
+    cnpj,
     phoneNumber,
     address,
-    changeCpf,
+    changeCnpj,
     changePhoneNumber,
     changeAddress,
-  } = useRegister();
-  const [cpfError, setCpfError] = useState(false);
+  } = useSupplierRegister();
+  const [cnpjError, setCnpjError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
 
   async function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!cpf || !phoneNumber || !address) {
+    if (!cnpj || !phoneNumber || !address) {
       return;
     }
 
-    const [_, cpfResponse] = await safeAsync(checkCpfAvailability(cpf));
+    const [_, cnpjResponse] = await safeAsync(checkCpfAvailability(cnpj));
 
-    if (cpfResponse.inUse) setCpfError(() => true);
-    else setCpfError(() => false);
+    if (cnpjResponse.inUse) setCnpjError(() => true);
+    else setCnpjError(() => false);
 
     const [_e, phoneResponse] = await safeAsync(
       checkPhoneAvailability(phoneNumber)
@@ -40,9 +40,9 @@ export function BasicInfoStep() {
     if (phoneResponse.inUse) setPhoneError(() => true);
     else setPhoneError(() => false);
 
-    if (phoneResponse.inUse || cpfResponse.inUse) return;
+    if (phoneResponse.inUse || cnpjResponse.inUse) return;
 
-    return router.push("/cadastro/steps/email");
+    return router.push("/cadastro/provedor/steps/email");
   }
 
   return (
@@ -50,15 +50,15 @@ export function BasicInfoStep() {
       <div className="space-y-4">
         <div className="relative w-sm">
           <TextField
-            id="cpf"
-            name="cpf"
+            id="cnpj"
+            name="cnpj"
             type="text"
-            label="CPF"
+            label="CNPJ"
             variant="outlined"
             className="w-full"
-            value={cpf}
-            error={cpfError}
-            onChange={(e) => (changeCpf ? changeCpf(e.target.value) : null)}
+            value={cnpj}
+            error={cnpjError}
+            onChange={(e) => (changeCnpj ? changeCnpj(e.target.value) : null)}
           />
         </div>
         <div className="relative w-sm">

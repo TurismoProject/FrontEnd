@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/hover-card";
 import Image from "next/image";
 import { useAuth } from "../../contexts/AuthContext";
-import { logoutUser } from "@/app/actions";
 import { CartButton } from "../CartButton";
 
 export const HeaderComponent = () => {
@@ -59,7 +58,7 @@ export const HeaderComponent = () => {
   };
 
   // ################# NETWORKING #################
-  const { logOut, user } = useAuth();
+  const { user } = useAuth();
 
   return (
     <>
@@ -273,12 +272,14 @@ export const HeaderComponent = () => {
 };
 
 function UserHoverContent(logged: boolean | undefined, userName?: string) {
+  const { logOut } = useAuth();
+
   if (!logged)
     return (
       <ul className="space-y-2">
         <li>
           <Link
-            href="/cadastro/steps/nome"
+            href="/cadastro"
             className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
           >
             Cadastre-se
@@ -317,7 +318,7 @@ function UserHoverContent(logged: boolean | undefined, userName?: string) {
         <li>
           <button
             onClick={async () => {
-              await logoutUser();
+              logOut?.();
               window.location.reload();
             }}
             className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"

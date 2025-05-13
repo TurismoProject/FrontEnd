@@ -17,7 +17,7 @@ interface AuthContextProps {
   accessToken?: string;
   setJWTAccessToken?: (token: string) => void;
   setUserData?: (user: User) => void;
-  logOut?: () => void;
+  logOut?: () => Promise<void>;
   UserBasicInfo?: () => Promise<void>;
 }
 

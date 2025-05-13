@@ -1,23 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRegister } from "@/contexts/RegisterContext";
+import { useSupplierRegister } from "@/contexts/SupplierRegisterContext";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 
 export function NameStep() {
   const router = useRouter();
-  const { firstName, changeFirstName, lastName, changeLastName } =
-    useRegister();
+  const { name, changeName } = useSupplierRegister();
 
   function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!firstName || !lastName) {
+    if (!name) {
       return;
     }
 
-    return router.push("/cadastro/steps/nascimento");
+    return router.push("/cadastro/provedor/steps/info");
   }
 
   return (
@@ -25,28 +24,12 @@ export function NameStep() {
       <div className="space-y-6">
         <div className="relative w-sm">
           <TextField
-            id="firstname"
-            name="firstname"
+            id="name"
+            name="name"
             type="text"
             label="Nome"
-            value={firstName}
-            onChange={(e) =>
-              changeFirstName ? changeFirstName(e.target.value) : null
-            }
-            variant="outlined"
-            className="w-full"
-          />
-        </div>
-        <div className="relative w-sm">
-          <TextField
-            id="lastname"
-            name="lastname"
-            type="text"
-            label="Sobrenome"
-            value={lastName}
-            onChange={(e) =>
-              changeLastName ? changeLastName(e.target.value) : null
-            }
+            value={name}
+            onChange={(e) => (changeName ? changeName(e.target.value) : null)}
             variant="outlined"
             className="w-full"
           />

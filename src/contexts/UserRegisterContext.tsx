@@ -28,11 +28,15 @@ interface RegisterContextProps {
   handleRegisterUser?: () => Promise<boolean | void>;
 }
 
-const RegisterContext = createContext<RegisterContextProps>({});
+const UserRegisterContext = createContext<RegisterContextProps>({});
 
-export const useRegister = () => useContext(RegisterContext);
+export const useUserRegister = () => useContext(UserRegisterContext);
 
-export function RegisterProvider({ children }: { children: React.ReactNode }) {
+export function UserRegisterProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -120,7 +124,7 @@ export function RegisterProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <RegisterContext.Provider
+    <UserRegisterContext.Provider
       value={{
         email,
         password,
@@ -144,6 +148,6 @@ export function RegisterProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </RegisterContext.Provider>
+    </UserRegisterContext.Provider>
   );
 }

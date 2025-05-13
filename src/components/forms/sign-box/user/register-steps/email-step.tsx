@@ -2,7 +2,7 @@
 
 import { checkEmailAvailability } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { useRegister } from "@/contexts/RegisterContext";
+import { useUserRegister } from "@/contexts/UserRegisterContext";
 import { safeAsync } from "@/lib/utils";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { useState } from "react";
 
 export function EmailStep() {
   const router = useRouter();
-  const { email, changeEmail } = useRegister();
+  const { email, changeEmail } = useUserRegister();
   const [error, setError] = useState(false);
 
   async function handleNextStep(e: React.FormEvent<HTMLFormElement>) {

@@ -1,20 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api")) {
+  const pathName = request.nextUrl.pathname;
+
+  if (pathName.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  if (request.nextUrl.pathname.startsWith("/cadastro")) {
+  if (pathName.startsWith("/cadastro/provedor")) {
     const pathNameArr = request.nextUrl.pathname.split("/");
-    if (pathNameArr.length === 2 || pathNameArr.length === 3) {
+    if (pathNameArr.length === 3) {
       return NextResponse.redirect(
-        new URL("/cadastro/steps/nome", request.url)
+        new URL("/cadastro/provedor/steps/nome", request.url)
       );
     }
   }
 
-  if (request.nextUrl.pathname.startsWith("/login")) {
+  if (pathName.startsWith("/cadastro/usuario")) {
+    const pathNameArr = request.nextUrl.pathname.split("/");
+    if (pathNameArr.length === 3) {
+      return NextResponse.redirect(
+        new URL("/cadastro/usuario/steps/nome", request.url)
+      );
+    }
+  }
+
+  if (pathName.startsWith("/login")) {
     const refreshToken = request.cookies.get("refresh-token")?.value;
     if (!refreshToken) {
       return NextResponse.next();

@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { useRouter } from "next/navigation";
-import { useRegister } from "@/contexts/RegisterContext";
+import { useUserRegister } from "@/contexts/UserRegisterContext";
 
 export function BirthdayStep() {
   const router = useRouter();
-  const { birthday, changeBirthday } = useRegister();
+  const { birthday, changeBirthday } = useUserRegister();
 
   function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

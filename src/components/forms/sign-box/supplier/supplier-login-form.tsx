@@ -1,26 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { getUserBasicInfo, loginSupplier, loginUser } from "@/app/actions";
-import { useAuth } from "../../../contexts/AuthContext";
+import { getUserBasicInfo, loginSupplier } from "@/app/actions";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { safeAsync } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useFormStatus } from "react-dom";
 
-export default function LoginForm({
-  type,
-}: {
-  type: "loginUser" | "loginSupplier";
-}) {
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      variant="contained"
+      className="w-full flex justify-center py-4 px-4 border border-transparent text-xl font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 normal-case"
+      loading={pending}
+      loadingPosition="center"
+    >
+      Login
+    </Button>
+  );
+}
+
+export default function SupplierLoginForm() {
   const { setJWTAccessToken, setUserData } = useAuth();
   const router = useRouter();
 
   async function handleAction(formData: FormData) {
-    const [loginError, response] =
-      type === "loginUser"
-        ? await safeAsync(loginUser(formData))
-        : await safeAsync(loginSupplier(formData));
+    const [loginError, response] = await safeAsync(loginSupplier(formData));
 
     if (loginError) {
       console.log(loginError);
@@ -91,13 +101,7 @@ export default function LoginForm({
       </div>
 
       <div>
-        <Button
-          type="submit"
-          size="xl"
-          className="w-full flex justify-center py-2 px-4 border border-transparent text-xl font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Login
-        </Button>
+        <SubmitButton />
       </div>
     </form>
   );

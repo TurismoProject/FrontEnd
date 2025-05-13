@@ -1,7 +1,11 @@
 "use server";
 
 import { SupplierDashboard } from "@/lib/interfaces";
-import { loginSchema, registerSchema } from "@/schemas/auth-schema";
+import {
+  loginSchema,
+  registerUserSchema,
+  registerSupplierSchema,
+} from "@/schemas/auth-schema";
 import { cookies } from "next/headers";
 
 export async function loginUser(formData: FormData) {
@@ -23,7 +27,8 @@ export async function loginUser(formData: FormData) {
     cache: "no-store",
   });
 
-  const data = await response.json();
+  const data: { accessToken: string; refreshToken: string; message: string } =
+    await response.json();
 
   if (!response.ok) {
     throw new Error(data.message);
@@ -187,7 +192,7 @@ export async function registerUser(formData: FormData) {
 
   console.log(cpf);
 
-  const result = registerSchema.safeParse({
+  const result = registerUserSchema.safeParse({
     name,
     email,
     password,
@@ -228,6 +233,43 @@ export async function registerUser(formData: FormData) {
   return {
     success: true,
     data,
+  };
+}
+
+export async function registerSupplier(formData: FormData) {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+  const cnpj = formData.get("cnpj");
+  const phoneNumber = formData.get("phoneNumber");
+  const address = formData.get("address");
+
+  const result = registerSupplierSchema.safeParse({
+    name,
+    email,
+    password,
+    cnpj,
+    phoneNumber,
+    address,
+  });
+
+  const response = await fetch(`${process.env.API_URL}/provedor/cadastro`, {
+    method: "POST",
+    body: JSON.stringify(result.data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return {
+      success: false,
+    };
+  }
+
+  return {
+    success: true,
   };
 }
 

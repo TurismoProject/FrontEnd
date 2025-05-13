@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRegister } from "@/contexts/RegisterContext";
+import { useSupplierRegister } from "@/contexts/SupplierRegisterContext";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 
@@ -12,8 +12,8 @@ export function PasswordStep() {
     confirmPassword,
     changePassword,
     changeConfirmPassword,
-    handleRegisterUser,
-  } = useRegister();
+    handleRegisterSupplier,
+  } = useSupplierRegister();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,7 +22,7 @@ export function PasswordStep() {
 
     if (password !== confirmPassword) return;
 
-    const success = await handleRegisterUser?.();
+    const success = await handleRegisterSupplier?.();
 
     if (success) {
       router.push("/");
