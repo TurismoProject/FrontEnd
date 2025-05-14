@@ -82,8 +82,16 @@ function ExtraButtons({ type }: { type: "register" | "login" }) {
           Cadastre-se
         </Link>
       </p>
-      <p className="text-center text-sm text-gray-700 rounded-sm">
-        Faça o seu Login com a google
+
+      <p className="text-center text-sm text-gray-700 rounded-sm flex items-center justify-center gap-2">
+        <span>Faça o seu Login com a </span>
+        <Link
+          href="http://localhost:3002/usuario/auth/google"
+          className="flex items-center"
+        >
+          <img src="/google.png" alt="Google Logo" width={20} height={20} />
+          oogle
+        </Link>
       </p>
     </>
   );
