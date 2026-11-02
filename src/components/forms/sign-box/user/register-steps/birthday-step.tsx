@@ -1,53 +1,39 @@
 "use client";
 
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Button } from "@/components/ui/button";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useUserRegister } from "@/contexts/UserRegisterContext";
+import { StepButton } from "./step-button";
+import styles from "../../auth.module.css";
 
 export function BirthdayStep() {
   const router = useRouter();
   const { birthday, changeBirthday } = useUserRegister();
 
-  function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (!birthday) {
-      return;
-    }
-
-    return router.push("/cadastro/steps/info");
+  function handleNextStep(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!birthday?.isValid()) return;
+    router.push("/cadastro/usuario/steps/info");
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleNextStep}>
-      <div className="space-y-4">
-        <div className="relative w-sm">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Data de nascimento"
-              views={["day", "month", "year"]}
-              className="w-full"
-              value={birthday}
-              onChange={(value) =>
-                changeBirthday ? changeBirthday(value) : null
-              }
-              format="DD/MM/YYYY"
-            />
-          </LocalizationProvider>
-        </div>
-      </div>
-      <div>
-        <Button
-          type="submit"
-          size="xl"
-          className="text-lg w-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Próximo
-        </Button>
-      </div>
+    <form className={styles.form} onSubmit={handleNextStep}>
+      <label className={styles.field}>
+        Data de nascimento
+        <input
+          name="birthday"
+          type="date"
+          autoComplete="bday"
+          required
+          value={birthday?.format("YYYY-MM-DD") || ""}
+          onChange={(event) =>
+            changeBirthday?.(
+              event.target.value ? dayjs(event.target.value) : null,
+            )
+          }
+        />
+      </label>
+      <StepButton />
     </form>
   );
 }

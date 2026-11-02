@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Conheça seu destino — frontend
 
-## Getting Started
+Aplicação Next.js 14 com React, TypeScript, Tailwind e componentes Radix/shadcn.
 
-First, run the development server:
+## Desenvolvimento
 
-```bash
+```sh
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O frontend inicia em `http://localhost:3000`. O backend NestJS deve estar disponível
+em `http://127.0.0.1:3003`; configure `TURISMO_API_URL` (área do empresário) e
+`API_URL` (autenticação e produtos) em `.env.local` se ele usar outro endereço.
+As duas variáveis são privadas do servidor Next.js. Reinicie o frontend depois
+de alterá-las.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Acesso do usuário
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+`/login` abre diretamente o formulário de usuário; `/login/usuario` mantém o
+mesmo acesso para links existentes. `/cadastro` permite escolher uma conta de
+usuário ou provedor. O cadastro de usuário tem cinco etapas, com progresso e
+retorno preservando os dados preenchidos.
+Login e cadastro compartilham `src/components/forms/sign-box/auth-layout.tsx` e
+usam a identidade visual da área do empresário, com adaptação para celular.
 
-## Learn More
+O cadastro consulta `POST /usuario/check-cpf`, `/usuario/check-phone` e
+`/usuario/check-email`. Essas rotas precisam responder com `{ inUse: boolean }`;
+respostas indisponíveis ou incompatíveis mostram uma mensagem de erro e não
+aprovam a verificação.
 
-To learn more about Next.js, take a look at the following resources:
+## Área do empresário
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/empresario/login`: acesso com uma conta já cadastrada como fornecedor.
+- `/empresario`: resumo por período, agenda de saídas e resultados por passeio/dia.
+- `/empresario/reservas`: todas as saídas por padrão, com paginação e filtros opcionais por período, situação e ID do passeio.
+- `/empresario/reservas/:departureId`: reservas, passageiros, ações em massa,
+  comparecimento, histórico e encerramento da saída.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+A página pública tem o acesso “Área do empresário” na seção “Empresa” do rodapé.
+Os fluxos de login/cadastro de turistas e fornecedores trazidos da branch Isaac
+continuam disponíveis, separados desta área.
 
-## Deploy on Vercel
+Os dados vêm do backend; sem saídas ou reservas cadastradas, as telas mostram
+estados vazios. Nenhum dado demonstrativo é carregado na aplicação.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Organização
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```text
+src/app/empresario/           Rotas e layouts; o grupo (painel) compartilha a sessão
+src/app/api/empresario/       Adaptadores HTTP para o backend, com rotas permitidas
+src/features/supplier/
+  components/                Telas e componentes da operação do fornecedor
+  types.ts                   Contratos usados pela interface
+  api.ts                     Requisições e erros no navegador
+  format.ts                  Datas, moeda e intervalos
+  use-resource.ts            Consulta com descarte de respostas antigas
+  use-departure.ts           Localização de saída pelo contrato disponível
+  supplier.module.css        Estilos isolados da área do empresário
+src/lib/supplier-server.ts   Cookies, comunicação privada e renovação da sessão
+```
+
+### Regras da integração
+
+- Access e refresh tokens ficam em cookies HttpOnly, com `SameSite=Lax` e `Secure`
+  em produção. Não são gravados em localStorage nem retornados para o JavaScript.
+- O servidor Next renova o acesso e deduplica renovações simultâneas na mesma
+  instância. Uma implantação com várias instâncias exige coordenação compartilhada
+  da rotação ou ajuste no contrato de renovação do backend.
+- Mutações exigem a mesma origem do frontend. O backend continua responsável por
+  autorização, propriedade, capacidade, transações e transições de estado.
+- O logout limpa a sessão deste navegador. O backend atual não expõe uma rota de
+  revogação para o fornecedor.
+- Apenas reservas confirmadas ocupam vagas. Uma reserva pode ter vários passageiros;
+  o responsável não embarca automaticamente.
+- As seleções são limitadas à página atual. Comparecimento aceita até 100 pessoas
+  por operação. Falhas não provocam reenvio automático de mutações.
+- Datas de filtro usam Maceió (UTC−3). Horários de cada saída respeitam seu fuso;
+  o painel usa os agrupamentos calculados pelo backend.
+- O filtro de passeio usa UUID porque o backend atual não expõe uma listagem de
+  produtos do fornecedor. Também não há consulta individual de saída: os links
+  levam produto/instante para filtrar a listagem; sem contexto, a consulta percorre
+  as páginas até encontrar o ID, sempre dentro dos dados autorizados pelo backend.
+- Criação de produtos, upload de imagens e pagamentos não fazem parte destas telas.
+
+O contrato completo está em `back-end/Back-end/docs/reservations.md` no projeto irmão.
+
+## Verificação
+
+Pare o servidor de desenvolvimento antes de compilar e testar na mesma pasta:
+o build e o `npm run dev` compartilham o diretório gerado `.next`.
+
+```sh
+npx tsc --noEmit --incremental false
+npm run build
+npm run test:supplier
+```
+
+O build usa a fonte Inter já configurada em `next/font/google`, precisando de acesso
+ao Google Fonts quando ela ainda não estiver em cache.
+
+Os testes de integração iniciam um Next de produção e um backend descartável em
+portas locais livres. Execute o build antes dos testes. Eles verificam cookies,
+autorização, origem, rotação simultânea, erros e encaminhamento das ações. Não
+acessam o PostgreSQL nem substituem testes completos contra o NestJS real.
+
+`tests/fixtures/supplier-backend.mjs` contém somente dados fictícios para testes;
+não é importado pelo código da aplicação.

@@ -1,3 +1,3 @@
 export default function NavBar() {
-    return ();
+  return null;
 }

@@ -1,108 +1,111 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import { getUserBasicInfo, loginUser } from "@/app/actions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { safeAsync } from "@/lib/utils";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import styles from "../auth.module.css";
+
+function LoginFields() {
+  const { pending } = useFormStatus();
+  return (
+    <fieldset className={styles.fields} disabled={pending}>
+      <label className={styles.field}>
+        E-mail
+        <input
+          name="email"
+          type="email"
+          autoComplete="username"
+          placeholder="voce@exemplo.com"
+          maxLength={254}
+          required
+        />
+      </label>
+      <label className={styles.field}>
+        Senha
+        <input
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          placeholder="Sua senha"
+          maxLength={256}
+          required
+        />
+      </label>
+    </fieldset>
+  );
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
-
   return (
-    <Button
+    <button
       type="submit"
-      variant="contained"
-      className="w-full flex justify-center py-4 px-4 border border-transparent text-xl font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 normal-case"
-      loading={pending}
-      loadingPosition="center"
+      className={styles.submit}
+      disabled={pending}
+      aria-busy={pending}
     >
-      Login
-    </Button>
+      {pending ? "Entrando…" : "Entrar na minha conta"}
+      {pending ? (
+        <LoaderCircle size={18} className={styles.spinner} aria-hidden="true" />
+      ) : (
+        <ArrowRight size={18} aria-hidden="true" />
+      )}
+    </button>
   );
 }
 
 export default function UserLoginForm() {
   const { setJWTAccessToken, setUserData } = useAuth();
   const router = useRouter();
+  const [error, setError] = useState("");
 
   async function handleAction(formData: FormData) {
+    setError("");
     const [loginError, response] = await safeAsync(loginUser(formData));
-
     if (loginError) {
-      console.log(loginError);
+      setError(
+        "Não foi possível entrar. Confira seu e-mail e senha e tente novamente.",
+      );
       return;
     }
-
-    if (!setJWTAccessToken || !setUserData) return;
-
-    const [err, userData] = await safeAsync(
-      getUserBasicInfo(response.accessToken)
+    if (!setJWTAccessToken || !setUserData) {
+      setError(
+        "Não foi possível iniciar sua sessão. Atualize a página e tente novamente.",
+      );
+      return;
+    }
+    const [profileError, userData] = await safeAsync(
+      getUserBasicInfo(response.accessToken),
     );
-
-    if (err) {
-      console.log(err);
+    if (profileError) {
+      setError("Não foi possível carregar sua conta. Tente novamente.");
       return;
     }
-
-    const name = userData?.name || "";
     setJWTAccessToken(response.accessToken);
     setUserData({
-      name: name,
+      name: userData?.name || "",
       email: formData.get("email") as string,
     });
-
-    // TODO: Redirect to the page the user was in before
-    // logging in.
     router.push("/");
   }
 
   return (
-    <form className="space-y-6" action={handleAction}>
-      <div className="space-y-4">
-        <div className="relative w-sm">
-          <TextField
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            label="Endereço de e-mail"
-            required
-            className="w-full"
-            placeholder=""
-          />
-        </div>
-        <div className="relative w-sm">
-          <TextField
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            label="Senha"
-            required
-            className="w-full"
-            placeholder=""
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="text-sm">
-          <Link
-            href="/login/esqueci"
-            className="font-medium text-gray-500 hover:text-gray-400"
-          >
-            Esqueceu sua senha?
-          </Link>
-        </div>
-      </div>
-
-      <div>
-        <SubmitButton />
-      </div>
+    <form className={styles.form} action={handleAction}>
+      <LoginFields />
+      <Link href="/login/esqueci" className={styles.forgotLink}>
+        Esqueceu sua senha?
+      </Link>
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+      <SubmitButton />
     </form>
   );
 }

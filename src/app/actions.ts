@@ -85,7 +85,6 @@ export async function recreateAccessToken() {
     cookieStore.get("refresh-token")?.value;
 
   if (!refreshToken) {
-    console.log("No refresh token found");
     return;
   }
 
@@ -93,12 +92,15 @@ export async function recreateAccessToken() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${refreshToken}`,
     },
-    next: {
-      revalidate: 15 * 60,
-    },
+    body: JSON.stringify({ refreshToken }),
+    cache: "no-store",
   });
+
+  if (!response.ok) {
+    if (response.status === 401) cookieStore.delete("refresh-token");
+    return;
+  }
 
   const data = await response.json();
 
@@ -114,8 +116,8 @@ export async function getUserBasicInfo(accessToken: string) {
     },
   });
 
+  if (!response.ok) throw new Error("Não foi possível carregar sua conta.");
   const data = await response.json();
-  console.log(data); // TODO: Remover depois do teste
 
   return data.user;
 }

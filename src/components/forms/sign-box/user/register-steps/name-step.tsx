@@ -1,68 +1,48 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useUserRegister } from "@/contexts/UserRegisterContext";
-import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
-import { GoogleLoginLink } from "../google-login-link";
+import { StepButton } from "./step-button";
+import styles from "../../auth.module.css";
 
 export function NameStep() {
   const router = useRouter();
   const { firstName, changeFirstName, lastName, changeLastName } =
     useUserRegister();
 
-  function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (!firstName || !lastName) {
-      return;
-    }
-
-    return router.push("/cadastro/usuario/steps/nascimento");
+  function handleNextStep(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!firstName?.trim() || !lastName?.trim()) return;
+    router.push("/cadastro/usuario/steps/nascimento");
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleNextStep}>
-      <div className="space-y-6">
-        <div className="relative w-sm">
-          <TextField
-            id="firstname"
+    <form className={styles.form} onSubmit={handleNextStep}>
+      <div className={styles.fields}>
+        <label className={styles.field}>
+          Nome
+          <input
             name="firstname"
-            type="text"
-            label="Nome"
-            value={firstName}
-            onChange={(e) =>
-              changeFirstName ? changeFirstName(e.target.value) : null
-            }
-            variant="outlined"
-            className="w-full"
+            autoComplete="given-name"
+            placeholder="Seu nome"
+            required
+            value={firstName || ""}
+            onChange={(event) => changeFirstName?.(event.target.value)}
           />
-        </div>
-        <div className="relative w-sm">
-          <TextField
-            id="lastname"
+        </label>
+        <label className={styles.field}>
+          Sobrenome
+          <input
             name="lastname"
-            type="text"
-            label="Sobrenome"
-            value={lastName}
-            onChange={(e) =>
-              changeLastName ? changeLastName(e.target.value) : null
-            }
-            variant="outlined"
-            className="w-full"
+            autoComplete="family-name"
+            placeholder="Seu sobrenome"
+            required
+            value={lastName || ""}
+            onChange={(event) => changeLastName?.(event.target.value)}
           />
-        </div>
+        </label>
       </div>
-      <div>
-        <Button
-          type="submit"
-          size="xl"
-          className="text-lg w-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Próximo
-        </Button>
-      </div>
-      <GoogleLoginLink />
+      <StepButton />
     </form>
   );
 }

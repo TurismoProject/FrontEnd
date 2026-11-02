@@ -1,10 +1,51 @@
-import { LogoImg } from "@/components/cardImport";
-import Button from "@mui/material/Button";
-import Image from "next/image";
 import Link from "next/link";
-import UserLoginForm from "./user-login-form";
+import { ArrowLeft } from "lucide-react";
+import { AuthLayout } from "../auth-layout";
+import { UserLoginPage } from "./user-login-page";
 import RegisterSteps from "./register-steps";
-import { GoogleLoginLink } from "./google-login-link";
+import styles from "../auth.module.css";
+
+const registrationSteps = [
+  {
+    id: "name",
+    label: "Seu nome",
+    path: "nome",
+    title: "Crie sua conta.",
+    description:
+      "Vamos começar pelo seu nome. Sua próxima experiência está mais perto.",
+  },
+  {
+    id: "birthday",
+    label: "Nascimento",
+    path: "nascimento",
+    title: "Quando você nasceu?",
+    description: "Informe sua data de nascimento para continuar o cadastro.",
+  },
+  {
+    id: "basicInfo",
+    label: "Seus dados",
+    path: "info",
+    title: "Seus dados de contato.",
+    description:
+      "Preencha seus dados para identificar sua conta e facilitar o contato sobre suas reservas.",
+  },
+  {
+    id: "email",
+    label: "E-mail",
+    path: "email",
+    title: "Qual é seu e-mail?",
+    description:
+      "Você vai usá-lo para entrar na sua conta e acompanhar suas reservas.",
+  },
+  {
+    id: "password",
+    label: "Senha",
+    path: "senha",
+    title: "Crie sua senha.",
+    description:
+      "Falta pouco! Escolha uma senha para proteger o acesso à sua conta.",
+  },
+] as const;
 
 interface SignFormProps {
   type: "register" | "login";
@@ -12,102 +53,67 @@ interface SignFormProps {
 }
 
 export default function UserSignBox({ type, step }: SignFormProps) {
-  if (type === "register" && !step) throw new Error("Missing step");
+  if (type === "login") return <UserLoginPage />;
+  const index = registrationSteps.findIndex((item) => item.id === step);
+  const current = registrationSteps[index];
+  if (!current) throw new Error("Etapa de cadastro inválida.");
+  const previous = registrationSteps[index - 1];
 
   return (
-    <div className="grid grid-cols-2 bg-white shadow-md rounded-lg overflow-hidden w-3/4">
-      <div className="hidden md:flex flex-col justify-center p-8 bg-white">
-        <Link href="/">
-          <Image src={LogoImg} alt="Logo" />
-        </Link>
-      </div>
-
-      <div className="w-full p-8 space-y-8">
-        <Title type={type} step={step} />
-
-        {type === "login" ? <UserLoginForm /> : <RegisterSteps step={step} />}
-
-        <ExtraButtons type={type} />
-
-        <div className="flex justify-between mt-4">
-          <p className="text-sm text-gray-600">
-            &copy; 2025 Todos os direitos reservados.
-          </p>
-          <div className="flex gap-1">
-            <Button className="bg-transparent text-gray-600 py-0 hover:bg-gray-200/70 text-xs h-8 normal-case">
-              Termos
-            </Button>
-            <Button className="bg-transparent text-gray-600 py-0 hover:bg-gray-200/70 text-xs h-8 normal-case">
-              Privacidade
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ExtraButtons({ type }: { type: "register" | "login" }) {
-  if (type === "register")
-    return (
-      <>
-        {/* <p className="text-center text-sm text-gray-700">
-          Você já tem uma conta?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-gray-400 hover:text-gray-500"
-          >
-            Faça login
-          </Link>
+    <AuthLayout
+      titleId="user-register-title"
+      eyebrow="CRIE SUA CONTA"
+      title={current.title}
+      description={current.description}
+      storyTitle={
+        <>
+          Sua próxima
+          <br />
+          história
+          <br />
+          começa aqui.
+        </>
+      }
+      storyDescription="Encontre experiências, planeje seus passeios e tenha suas reservas sempre por perto."
+    >
+      <div
+        className={styles.progress}
+        role="group"
+        aria-label="Progresso do cadastro"
+      >
+        <p>
+          <span>
+            Etapa {index + 1} de {registrationSteps.length}
+          </span>
+          <strong>{current.label}</strong>
         </p>
-        <p className="text-center text-sm text-gray-700 rounded-sm">
-          Faça o seu Login com a google
-        </p> */}
-      </>
-    );
-
-  if (type === "login")
-    return (
-      <>
-        <p className="text-center text-sm text-gray-700">
-          Não tem uma conta?{" "}
+        <ol>
+          {registrationSteps.map((item, position) => (
+            <li
+              key={item.id}
+              aria-current={position === index ? "step" : undefined}
+              data-complete={position < index || undefined}
+            >
+              <span className={styles.srOnly}>{item.label}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <RegisterSteps step={step} />
+      {previous && (
+        <nav className={styles.stepBack} aria-label="Navegação do cadastro">
           <Link
-            href="/cadastro/usuario/steps/nome"
-            className="font-medium text-gray-400 hover:text-gray-500"
+            href={`/cadastro/usuario/steps/${previous.path}`}
+            className={styles.backLink}
           >
-            Cadastre-se
+            <ArrowLeft size={15} aria-hidden="true" />
+            Voltar à etapa anterior
           </Link>
-        </p>
-        <GoogleLoginLink />
-      </>
-    );
-}
-
-function Title({ type, step }: SignFormProps) {
-  return (
-    <div>
-      <h1 className="text-center text-3xl font-extrabold text-gray-900">
-        {type === "login"
-          ? "Bem-vindo de volta!"
-          : step === "name" || step === "basicInfo" || step === "birthday"
-            ? "Informações Básicas"
-            : step === "password"
-              ? "Crie sua senha"
-              : "Crie sua conta"}
-      </h1>
-      <p className="text-center text-lg font-normal text-gray-600">
-        {type === "login"
-          ? ""
-          : step === "name"
-            ? "Nos diga seu nome"
-            : step === "email"
-              ? "Insira seu email"
-              : step === "birthday"
-                ? "Insira sua data de nascimento"
-                : step === "basicInfo"
-                  ? "Nos diga mais sobre você"
-                  : "Crie sua conta"}
+        </nav>
+      )}
+      <p className={styles.registerLink}>
+        Já tem uma conta? <Link href="/login">Entrar</Link>
       </p>
-    </div>
+    </AuthLayout>
   );
 }

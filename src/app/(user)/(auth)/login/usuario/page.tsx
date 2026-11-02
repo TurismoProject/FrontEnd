@@ -1,10 +1,3 @@
-import React from "react";
-import { SignBox } from "@/components/forms/sign-box";
+import { UserLoginPage } from "@/components/forms/sign-box/user/user-login-page";
 
-export default function LoginUserPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-8 bg-neutral-100">
-      <SignBox type="loginUser" />
-    </div>
-  );
-}
+export default UserLoginPage;

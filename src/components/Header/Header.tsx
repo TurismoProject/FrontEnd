@@ -187,7 +187,7 @@ export const HeaderComponent = () => {
                       href="../Produto"
                       className={cn(
                         navigationMenuTriggerStyle(),
-                        `${color ? "text-black" : "text-white"}`
+                        `${color ? "text-black" : "text-white"}`,
                       )}
                     >
                       Pacotes para Familia
@@ -200,7 +200,7 @@ export const HeaderComponent = () => {
                       href="/"
                       className={cn(
                         navigationMenuTriggerStyle(),
-                        `${color ? "text-black" : "text-white"}`
+                        `${color ? "text-black" : "text-white"}`,
                       )}
                     >
                       Ajuda
@@ -318,7 +318,7 @@ function UserHoverContent(logged: boolean | undefined, userName?: string) {
         <li>
           <button
             onClick={async () => {
-              logOut?.();
+              await logOut?.();
               window.location.reload();
             }}
             className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"

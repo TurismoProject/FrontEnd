@@ -24,6 +24,9 @@ const FooterComponent = () => {
         <Link href="#" className="link link-hover">
           Contate-nos
         </Link>
+        <Link href="/empresario" className="link link-hover">
+          Área do empresário
+        </Link>
       </nav>
       <nav>
         <h6 className="footer-title">Política</h6>

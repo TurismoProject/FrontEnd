@@ -1,12 +1,12 @@
 "use client";
 
 import { checkCpfAvailability, checkPhoneAvailability } from "@/app/actions";
-import { Button } from "@/components/ui/button";
 import { useUserRegister } from "@/contexts/UserRegisterContext";
 import { safeAsync } from "@/lib/utils";
-import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { StepButton } from "./step-button";
+import styles from "../../auth.module.css";
 
 export function BasicInfoStep() {
   const router = useRouter();
@@ -20,86 +20,100 @@ export function BasicInfoStep() {
   } = useUserRegister();
   const [cpfError, setCpfError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
 
-  async function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (!cpf || !phoneNumber || !address) {
-      return;
+  async function handleNextStep(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!cpf || !phoneNumber || !address || pending) return;
+    setError("");
+    setPending(true);
+    try {
+      const [[cpfFailure, cpfResponse], [phoneFailure, phoneResponse]] =
+        await Promise.all([
+          safeAsync(checkCpfAvailability(cpf)),
+          safeAsync(checkPhoneAvailability(phoneNumber)),
+        ]);
+      if (
+        cpfFailure ||
+        phoneFailure ||
+        !cpfResponse ||
+        !phoneResponse ||
+        typeof cpfResponse.inUse !== "boolean" ||
+        typeof phoneResponse.inUse !== "boolean"
+      ) {
+        setError("Não foi possível verificar seus dados. Tente novamente.");
+        return;
+      }
+      setCpfError(Boolean(cpfResponse.inUse));
+      setPhoneError(Boolean(phoneResponse.inUse));
+      if (cpfResponse.inUse || phoneResponse.inUse) return;
+      router.push("/cadastro/usuario/steps/email");
+    } finally {
+      setPending(false);
     }
-
-    const [_, cpfResponse] = await safeAsync(checkCpfAvailability(cpf));
-
-    if (cpfResponse.inUse) setCpfError(() => true);
-    else setCpfError(() => false);
-
-    const [_e, phoneResponse] = await safeAsync(
-      checkPhoneAvailability(phoneNumber)
-    );
-
-    if (phoneResponse.inUse) setPhoneError(() => true);
-    else setPhoneError(() => false);
-
-    if (phoneResponse.inUse || cpfResponse.inUse) return;
-
-    return router.push("/cadastro/steps/email");
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleNextStep}>
-      <div className="space-y-4">
-        <div className="relative w-sm">
-          <TextField
-            id="cpf"
+    <form className={styles.form} onSubmit={handleNextStep}>
+      <fieldset className={styles.fields} disabled={pending}>
+        <label className={styles.field}>
+          CPF
+          <input
             name="cpf"
-            type="text"
-            label="CPF"
-            variant="outlined"
-            className="w-full"
-            value={cpf}
-            error={cpfError}
-            onChange={(e) => (changeCpf ? changeCpf(e.target.value) : null)}
+            inputMode="numeric"
+            maxLength={14}
+            placeholder="000.000.000-00"
+            required
+            value={cpf || ""}
+            aria-invalid={cpfError}
+            aria-describedby={cpfError ? "cpf-error" : undefined}
+            onChange={(event) => changeCpf?.(event.target.value)}
           />
-        </div>
-        <div className="relative w-sm">
-          <TextField
-            id="phoneNumber"
+          {cpfError && (
+            <span id="cpf-error" className={styles.fieldError}>
+              Este CPF já está cadastrado.
+            </span>
+          )}
+        </label>
+        <label className={styles.field}>
+          Telefone
+          <input
             name="phoneNumber"
             type="tel"
-            label="Telefone"
-            variant="outlined"
-            className="w-full"
-            value={phoneNumber}
-            error={phoneError}
-            onChange={(e) =>
-              changePhoneNumber ? changePhoneNumber(e.target.value) : null
-            }
+            autoComplete="tel"
+            maxLength={15}
+            placeholder="(82) 99999-9999"
+            required
+            value={phoneNumber || ""}
+            aria-invalid={phoneError}
+            aria-describedby={phoneError ? "phone-error" : undefined}
+            onChange={(event) => changePhoneNumber?.(event.target.value)}
           />
-        </div>
-        <div className="relative w-sm">
-          <TextField
-            id="address"
+          {phoneError && (
+            <span id="phone-error" className={styles.fieldError}>
+              Este telefone já está cadastrado.
+            </span>
+          )}
+        </label>
+        <label className={styles.field}>
+          Endereço
+          <input
             name="address"
-            type="text"
-            label="Endereço"
-            variant="outlined"
-            className="w-full"
-            value={address}
-            onChange={(e) =>
-              changeAddress ? changeAddress(e.target.value) : null
-            }
+            autoComplete="street-address"
+            placeholder="Rua, número, bairro e cidade"
+            required
+            value={address || ""}
+            onChange={(event) => changeAddress?.(event.target.value)}
           />
-        </div>
-      </div>
-      <div>
-        <Button
-          type="submit"
-          size="xl"
-          className="text-lg w-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Próximo
-        </Button>
-      </div>
+        </label>
+      </fieldset>
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+      <StepButton pending={pending} />
     </form>
   );
 }

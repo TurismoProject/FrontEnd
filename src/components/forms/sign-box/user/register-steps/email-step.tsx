@@ -1,58 +1,68 @@
 "use client";
 
 import { checkEmailAvailability } from "@/app/actions";
-import { Button } from "@/components/ui/button";
 import { useUserRegister } from "@/contexts/UserRegisterContext";
 import { safeAsync } from "@/lib/utils";
-import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { StepButton } from "./step-button";
+import styles from "../../auth.module.css";
 
 export function EmailStep() {
   const router = useRouter();
   const { email, changeEmail } = useUserRegister();
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
 
-  async function handleNextStep(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (!email) {
-      return;
+  async function handleNextStep(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!email || pending) return;
+    setError("");
+    setPending(true);
+    try {
+      const [failure, response] = await safeAsync(
+        checkEmailAvailability(email),
+      );
+      if (failure || !response || typeof response.inUse !== "boolean") {
+        setError("Não foi possível verificar seu e-mail. Tente novamente.");
+        return;
+      }
+      if (response.inUse) {
+        setError(
+          "Este e-mail já está cadastrado. Entre na sua conta ou use outro e-mail.",
+        );
+        return;
+      }
+      router.push("/cadastro/usuario/steps/senha");
+    } finally {
+      setPending(false);
     }
-
-    const [_, response] = await safeAsync(checkEmailAvailability(email));
-
-    if (response.inUse) return setError(() => true);
-
-    return router.push("/cadastro/steps/senha");
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleNextStep}>
-      <div className="space-y-4">
-        <div className="relative w-sm">
-          <TextField
-            id="email"
+    <form className={styles.form} onSubmit={handleNextStep}>
+      <fieldset className={styles.fields} disabled={pending}>
+        <label className={styles.field}>
+          E-mail
+          <input
             name="email"
             type="email"
-            label="Endereço de e-mail"
-            variant="outlined"
-            className="w-full"
-            value={email}
-            error={error}
-            onChange={(e) => (changeEmail ? changeEmail(e.target.value) : null)}
+            autoComplete="email"
+            placeholder="voce@exemplo.com"
+            required
+            maxLength={254}
+            value={email || ""}
+            aria-describedby={error ? "register-email-error" : undefined}
+            onChange={(event) => changeEmail?.(event.target.value)}
           />
-        </div>
-      </div>
-      <div>
-        <Button
-          type="submit"
-          size="xl"
-          className="text-lg w-full text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Próximo
-        </Button>
-      </div>
+        </label>
+      </fieldset>
+      {error && (
+        <p id="register-email-error" className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+      <StepButton pending={pending} />
     </form>
   );
 }
