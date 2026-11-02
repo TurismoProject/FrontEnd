@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import UserLoginForm from "./user-login-form";
 import RegisterSteps from "./register-steps";
+import { GoogleLoginLink } from "./google-login-link";
 
 interface SignFormProps {
   type: "register" | "login";
@@ -77,9 +78,7 @@ function ExtraButtons({ type }: { type: "register" | "login" }) {
             Cadastre-se
           </Link>
         </p>
-        <p className="text-center text-sm text-gray-700 rounded-sm">
-          Faça o seu Login com a google
-        </p>
+        <GoogleLoginLink />
       </>
     );
 }
@@ -91,23 +90,23 @@ function Title({ type, step }: SignFormProps) {
         {type === "login"
           ? "Bem-vindo de volta!"
           : step === "name" || step === "basicInfo" || step === "birthday"
-          ? "Informações Básicas"
-          : step === "password"
-          ? "Crie sua senha"
-          : "Crie sua conta"}
+            ? "Informações Básicas"
+            : step === "password"
+              ? "Crie sua senha"
+              : "Crie sua conta"}
       </h1>
       <p className="text-center text-lg font-normal text-gray-600">
         {type === "login"
           ? ""
           : step === "name"
-          ? "Nos diga seu nome"
-          : step === "email"
-          ? "Insira seu email"
-          : step === "birthday"
-          ? "Insira sua data de nascimento"
-          : step === "basicInfo"
-          ? "Nos diga mais sobre você"
-          : "Crie sua conta"}
+            ? "Nos diga seu nome"
+            : step === "email"
+              ? "Insira seu email"
+              : step === "birthday"
+                ? "Insira sua data de nascimento"
+                : step === "basicInfo"
+                  ? "Nos diga mais sobre você"
+                  : "Crie sua conta"}
       </p>
     </div>
   );

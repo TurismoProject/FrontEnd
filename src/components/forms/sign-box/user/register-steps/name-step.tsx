@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useUserRegister } from "@/contexts/UserRegisterContext";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
+import { GoogleLoginLink } from "../google-login-link";
 
 export function NameStep() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export function NameStep() {
       return;
     }
 
-    return router.push("/cadastro/steps/nascimento");
+    return router.push("/cadastro/usuario/steps/nascimento");
   }
 
   return (
@@ -61,6 +62,7 @@ export function NameStep() {
           Próximo
         </Button>
       </div>
+      <GoogleLoginLink />
     </form>
   );
 }

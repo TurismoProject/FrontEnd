@@ -21,7 +21,6 @@ import {
   NavigationMenuTrigger,
 } from "../ui/navigation-menu";
 import { Input } from "../ui/input";
-
 export default function HeaderProduto() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const color = true; // ou defina baseado na sua lógica
@@ -163,14 +162,14 @@ export default function HeaderProduto() {
         </NavigationMenu>
       </div>
 
-      {/* Container com 'relative' para posicionar o input */}
-      <div className="navbar-end pr-14 relative">
-        <div className="input input-bordered bg-white flex items-center gap-2 w-72 rounded-full shadow-lg pl-1 absolute right-64">
+      <div className="navbar-end pr-4 md:pr-8 lg:pr-14 flex items-center gap-x-2 sm:gap-x-3 md:gap-x-4">
+        <div className="input input-bordered bg-white flex items-center gap-2 w-56 sm:w-64 md:w-72 rounded-full shadow-lg pl-1">
           <Search />
           <Input
             type="text"
-            placeholder="Pesquise por passeios, Hoteis, pousadas..."
-            className="w-full text-xs"
+            placeholder="Pesquise por passeios, Hoteis..."
+            className="grow text-xs placeholder:text-gray-400"
+            style={{ minWidth: "120px" }}
           />
         </div>
 
@@ -202,14 +201,6 @@ export default function HeaderProduto() {
                   className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
                 >
                   Login
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/admin"
-                  className="text-black font-semibold block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 transform scale-100"
-                >
-                  Administração
                 </a>
               </li>
             </ul>

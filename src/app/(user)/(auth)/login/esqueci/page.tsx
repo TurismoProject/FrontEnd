@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogoImg } from "@/components/cardImport";
+import { GoogleLoginLink } from "@/components/forms/sign-box/user/google-login-link";
 
 function ForgotPage() {
   return (
@@ -65,11 +66,7 @@ function ForgotPage() {
               Faça login
             </Link>
           </p>
-
-          <p className="text-center text-sm text-gray-700 rounded-sm">
-            Ou entre com sua conta Google
-          </p>
-
+          <GoogleLoginLink />
           <div className="flex justify-between mt-4">
             <p className="text-sm text-gray-600">
               &copy; 2025 Todos os direitos reservados.
